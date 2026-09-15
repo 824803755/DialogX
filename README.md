@@ -137,7 +137,53 @@ Windows 上想开机自启，可以用 [NSSM](https://nssm.cc/) 或「任务计�
 
 `*.vercel.app` 免费域名在大陆经常打不开或很慢，这是 Vercel 官方承认的现状，见
 [Accessing Vercel-hosted sites from mainland China](https://vercel.com/kb/guide/accessing-vercel-hosted-sites-from-mainland-china)。
-访客主要在大陆的话，建议绑自己的域名，或干脆用「方式三」放到国内服务器 / 国内云（域名需备案）。
+
+### 让国内访问变快的三步
+
+**第一步：函数区域改到香港（收益最大，本项目已配好）**
+
+`vercel.json` 里的 `"regions": ["hkg1"]` 就是在做这件事。为什么关键：
+
+响应头 `x-vercel-id` 的格式是 `边缘节点::函数实际执行区域`。本项目整站都由 Go 函数渲染，
+如果函数留在默认的 `iad1`（美国华盛顿），每次访问都要「国内 → 香港边缘 → 华盛顿 → 返回」，
+实测 `x-vercel-id: hkg1::iad1`，单次请求 340～760ms。改成 `hkg1` 后函数就在香港执行，
+实测变成 `hkg1::hkg1`。
+
+也可以在控制台改：**Project → Settings → Functions → Function Region → Hong Kong (hkg1)**，改完必须 Redeploy。
+
+**第二步：绑定自己的域名**
+
+`*.vercel.app` 解析到的是 Google Cloud 的 IP，在大陆历史上经常被 DNS 污染或阻断。
+自有域名（`.com` 约 ¥60/年）通常更稳：
+
+1. Vercel 项目 → **Settings → Domains** → 添加你的域名
+2. 去域名商处按提示加解析：`A 76.76.21.21`，或者 `CNAME cname.vercel-dns.com`
+
+**第三步（可选）：让页面走边缘缓存**
+
+本项目的页面是实时渲染的（显示服务器时间、请求数），所以默认不缓存（`max-age=0`），
+每次访问都会执行函数。如果你更在意速度、不介意数字最多滞后一分钟，可以在 `vercel.json`
+的 `headers` 里加一条：
+
+```json
+{
+  "source": "/",
+  "headers": [
+    { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
+  ]
+}
+```
+
+这样 Vercel 香港边缘可以直接返回缓存，不用每次回源执行函数。
+
+### 如果要求「国内飞快」，Vercel 不是最优解
+
+Vercel 在中国大陆没有节点，上面三步只能改善，不能根治。真正快的是：
+
+- **国内云 + CDN**：腾讯云 EdgeOne Pages、阿里云 OSS/CDN、华为云等。最快最稳，
+  但域名必须 **ICP 备案**（需要一台国内服务器，通常 1～2 周）。
+- **香港/新加坡轻量服务器**：不用备案，国内访问比 Vercel 默认线路稳，
+  自己有运维成本。本项目自带 `Dockerfile`，一条 `docker run` 就能跑起来，迁移成本很低。
 
 **2. Serverless 是无状态的**
 

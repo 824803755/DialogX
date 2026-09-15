@@ -1,6 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["hkg1"],
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index.go" }
+  ],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=86400" }
+      ]
+    }
   ]
 }
