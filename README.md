@@ -176,6 +176,12 @@ Windows 上想开机自启，可以用 [NSSM](https://nssm.cc/) 或「任务计�
 
 这样 Vercel 香港边缘可以直接返回缓存，不用每次回源执行函数。
 
+> 注意这里有个坑：**`vercel.json` 的 `headers` 不能覆盖函数自己显式设置的响应头**。
+> 上面这条对 HTML 有效，是因为 Go 代码没有给 HTML 设 `Cache-Control`；
+> 而 `/static/*` 的缓存头是 Go 在 `site/site.go` 的 `cacheStatic()` 里设置的
+> （`public, max-age=3600, s-maxage=86400`），写在 `vercel.json` 里不会生效——
+> 这一点是实测出来的：配置写了 `s-maxage`，线上响应里却没有。
+
 ### 如果要求「国内飞快」，Vercel 不是最优解
 
 Vercel 在中国大陆没有节点，上面三步只能改善，不能根治。真正快的是：

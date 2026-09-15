@@ -56,7 +56,7 @@ func New() *Server {
 		logger:  log.New(os.Stdout, "[gosite] ", log.LstdFlags),
 	}
 
-	static := http.StripPrefix("/static/", cacheOneHour(http.FileServer(http.FS(pub))))
+	static := http.StripPrefix("/static/", cacheStatic(http.FileServer(http.FS(pub))))
 
 	mux := http.NewServeMux()
 	mux.Handle("/static/", static)
@@ -347,9 +347,14 @@ func setSecurityHeaders(h http.Header) {
 	h.Set("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'self'")
 }
 
-func cacheOneHour(next http.Handler) http.Handler {
+// cacheStatic 给静态资源加缓存头。
+//
+// 注意：这个头必须由函数自己设置。实测 Vercel 的 vercel.json headers 配置
+// 不会覆盖 Serverless Function 显式写出的响应头，写在配置里是无效的。
+// s-maxage 是给 Vercel 边缘节点（CDN）看的，max-age 是给浏览器看的。
+func cacheStatic(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "public, max-age=3600")
+		w.Header().Set("Cache-Control", "public, max-age=3600, s-maxage=86400")
 		next.ServeHTTP(w, r)
 	})
 }
