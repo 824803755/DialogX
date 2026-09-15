@@ -2,6 +2,9 @@
 gosite
 gosite.exe
 *.exe
+# Go 在目标文件被占用时会留下这种临时文件（例如 gosite.exe~）
+*.exe~
+*~
 *.test
 
 # Vercel CLI 本地状态

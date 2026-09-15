@@ -26,7 +26,7 @@
 goserver/
 ├─ main.go                 # 独立服务器的入口（本地运行 / 自己的服务器用这个）
 ├─ api/index.go            # Vercel Serverless Function 入口（Vercel 用这个）
-├─ internal/site/
+├─ site/
 │  ├─ site.go              # 全部业务逻辑：路由、渲染、JSON 接口、日志
 │  ├─ templates/           # HTML 模板（head/foot 在 partials.html）
 │  └─ public/              # CSS、favicon（被 embed 打进二进制）
@@ -37,7 +37,12 @@ goserver/
 └─ go.mod
 ```
 
-两份入口共用 `internal/site` 这一套代码，所以本地和线上行为完全一致。
+两份入口共用 `site` 这一套代码，所以本地和线上行为完全一致。
+
+> 公共代码刻意**没有**放在 `internal/` 目录下：Vercel 会把 `api/index.go` 复制成
+> `main__vc__go__.go` 并以「指定文件」方式编译（`go build main__vc__go__.go`），
+> 此时导入方的包名是 `command-line-arguments`，而 Go 规定 `internal` 包只能被同一
+> 模块树内的包导入，会直接报 `use of internal package ... not allowed`。
 
 ## 本地运行
 
@@ -148,11 +153,11 @@ Vercel 上每个函数实例各自独立，而且随时会被回收。所以：
 正常，它只接受 POST。用 README 里的 `curl` 或 `Invoke-RestMethod` 测试。
 
 **Q：改了模板 / CSS 怎么生效？**
-改 `internal/site/templates/` 或 `internal/site/public/` 里的文件，然后重新部署
+改 `site/templates/` 或 `site/public/` 里的文件，然后重新部署
 （`npx vercel --prod`，或 `git push`）。资源是编译时 embed 进去的，必须重新构建。
 
 **Q：为什么访问 `/static/style.css` 是 Go 返回的，不是 Vercel 的 CDN 返回的？**
-因为 CSS 内嵌在二进制里。想让它走 CDN，把 `internal/site/public/` 里的文件复制一份到根目录
+因为 CSS 内嵌在二进制里。想让它走 CDN，把 `site/public/` 里的文件复制一份到根目录
 `public/` 下即可（Vercel 会优先返回静态文件）。
 
 **Q：`public/` 目录能删吗？**

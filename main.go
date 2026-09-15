@@ -25,7 +25,7 @@ import (
 	"syscall"
 	"time"
 
-	"gosite/internal/site"
+	"gosite/site"
 )
 
 func main() {
