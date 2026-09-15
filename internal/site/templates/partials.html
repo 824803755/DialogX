@@ -1,0 +1,37 @@
+{{define "head"}}<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}} · 星野 Go 站</title>
+  <meta name="description" content="一个用 Go 标准库写成的动态网站：服务端渲染 HTML、内嵌静态资源、自带 JSON 接口。">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<input type="checkbox" id="nav-toggle" class="nav-toggle">
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="logo" href="/"><span class="logo-mark"></span><span>星野 · Go 站</span></a>
+    <nav class="nav-links">
+      <a href="/">首页</a>
+      <a href="/request">请求检测</a>
+      <a href="/api/info">JSON API</a>
+      <a href="/api/health">健康检查</a>
+    </nav>
+    <label for="nav-toggle" class="burger" aria-label="打开菜单"><span></span><span></span><span></span></label>
+  </div>
+</header>
+{{end}}
+
+{{define "foot"}}
+<footer class="site-footer">
+  <div class="wrap foot">
+    <span>© {{.Year}} 星野 · 本页由 Go {{.GoVer}} 在服务端渲染</span>
+    <span>渲染于 {{.Now}} · 本实例已处理 {{.Hits}} 个请求</span>
+  </div>
+</footer>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,13 @@
+# 编译产物
+gosite
+gosite.exe
+*.exe
+*.test
+
+# Vercel CLI 本地状态
+.vercel
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store

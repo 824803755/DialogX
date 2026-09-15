@@ -1,0 +1,96 @@
+{{template "head" .}}
+<main>
+  <section class="hero wrap">
+    <span class="pill"><span class="dot"></span> Go {{.GoVer }} · 纯标准库 · 零第三方依赖</span>
+    <h1>这个网站<br><span class="grad">由 Go 在服务端渲染</span></h1>
+    <p class="lead">
+      页面不是静态 HTML 文件，而是每次请求都由 Go 现算出来的：模板渲染、请求信息解析、
+      JSON 接口，全部来自 <code>net/http</code>。
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/request">检测我的请求 →</a>
+      <a class="btn btn-ghost" href="/api/info">看看 JSON 接口</a>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="status-grid">
+      <div class="stat">
+        <span class="stat-label">服务器时间（UTC+8）</span>
+        <strong class="stat-value">{{.Now}}</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">本实例运行时长</span>
+        <strong class="stat-value">{{.Uptime}}</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">本实例请求数</span>
+        <strong class="stat-value">{{.Hits}}</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">运行环境</span>
+        <strong class="stat-value small">{{.Region}}</strong>
+      </div>
+    </div>
+    <p class="hint">
+      这几个数字都是每次刷新页面时由 Go 实时计算出来的，看页面源码也找不到写死的值。
+      注意「本实例」的含义：Serverless 平台会把请求分给多个实例，每个实例各自计数。
+    </p>
+  </section>
+
+  <section class="wrap">
+    <h2 class="sec-title">这个站用到的 Go 能力</h2>
+    <div class="cards">
+      <article class="card">
+        <div class="ico">🛣️</div>
+        <h3>net/http 路由</h3>
+        <p>标准库自带路由和中间件写法，不需要任何 Web 框架就能撑起一个站点。</p>
+      </article>
+      <article class="card">
+        <div class="ico">🧩</div>
+        <h3>html/template</h3>
+        <p>服务端渲染 HTML，自动做上下文转义，天然防 XSS，首屏也没有白屏等待。</p>
+      </article>
+      <article class="card">
+        <div class="ico">📦</div>
+        <h3>embed 内嵌资源</h3>
+        <p>模板和 CSS 打包进可执行文件，部署时只有一个二进制，没有「文件漏传」问题。</p>
+      </article>
+      <article class="card">
+        <div class="ico">🔌</div>
+        <h3>JSON 接口</h3>
+        <p>encoding/json 直接编码结构体，<code>/api/info</code> 与 <code>/api/health</code> 开箱可用。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2 class="sec-title">自己试试这些接口</h2>
+    <div class="two-col">
+      <div class="card">
+        <h3>① 请求信息检测</h3>
+        <p>打开 <a href="/request">/request</a>，Go 会把你的 IP、UA、请求头整理成表格给你看（Cookie 和 Authorization 已过滤）。</p>
+      </div>
+      <div class="card">
+        <h3>② POST 回显接口</h3>
+        <p>服务端解析 JSON 并回显，用来确认后端真的在工作：</p>
+        <pre><code>curl -X POST {{if .Host}}https://{{.Host}}{{end}}/api/echo \
+  -H "Content-Type: application/json" \
+  -d "{\"hello\":\"world\"}"</code></pre>
+        <p class="hint">PowerShell 里用：<br><code>Invoke-RestMethod -Method Post -Uri https://你的域名/api/echo -ContentType application/json -Body '{"hello":"world"}'</code></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <h2>准备好上线了吗</h2>
+      <p>本地已经能跑，部署到 Vercel 只需要三条命令；也可以编译成单个二进制丢到自己的服务器上。</p>
+      <pre><code>go run .          # 本地预览 http://127.0.0.1:8080
+npx vercel        # 首次部署
+npx vercel --prod # 正式发布</code></pre>
+      <p class="hint">详细步骤见项目里的 <code>README.md</code>。</p>
+    </div>
+  </section>
+</main>
+{{template "foot" .}}

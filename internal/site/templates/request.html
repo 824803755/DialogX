@@ -1,0 +1,42 @@
+{{template "head" .}}
+<main>
+  <section class="hero wrap">
+    <h1>你的这次请求，<span class="grad">被 Go 看光了</span></h1>
+    <p class="lead">下面是服务端接收到的原始信息。出于安全考虑，Cookie 与 Authorization 头不会显示。</p>
+  </section>
+
+  <section class="wrap">
+    <div class="panel">
+      <table class="kv">
+        <tbody>
+          <tr><th>请求方法</th><td>{{.Req.Method}}</td></tr>
+          <tr><th>请求路径</th><td>{{.Req.Path}}{{if .Req.Query}}?{{.Req.Query}}{{end}}</td></tr>
+          <tr><th>协议</th><td>{{.Req.Proto}}</td></tr>
+          <tr><th>Host</th><td>{{.Req.Host}}</td></tr>
+          <tr><th>客户端 IP</th><td>{{.Req.ClientIP}}</td></tr>
+          <tr><th>User-Agent</th><td class="wrap-cell">{{.Req.UserAgent}}</td></tr>
+          {{if .Req.Referer}}<tr><th>来源页</th><td class="wrap-cell">{{.Req.Referer}}</td></tr>{{end}}
+          <tr><th>服务端接收时间</th><td>{{.Req.Time}}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="sec-title">请求头（共 {{len .Req.Headers}} 项）</h2>
+    <div class="panel">
+      <table class="kv">
+        <tbody>
+          {{range .Req.Headers}}
+          <tr><th>{{.Key}}</th><td class="wrap-cell">{{.Value}}</td></tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="/request">再检测一次</a>
+      <a class="btn btn-ghost" href="/api/info">以 JSON 查看</a>
+      <a class="btn btn-ghost" href="/">返回首页</a>
+    </div>
+  </section>
+</main>
+{{template "foot" .}}
